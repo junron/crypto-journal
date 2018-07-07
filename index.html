@@ -81,6 +81,7 @@
         const key = ids
         .map(idPair=>idPair
         .map(getKeyValue))
+        console.log(determinant(key))
         if(determinant(key)!=1){
           throw new Error("Determinant of key must be 1")
         }
@@ -98,11 +99,18 @@
       })
     }
     function hillGenkey(){
-      const keyLength = parseInt(prompt("Enter key length (1<x<10): "))
+      const keyLength = parseInt(prompt("Enter key length (1<x<9): "))
+      if(isNaN(keyLength) || keyLength<2){
+        return alert("Invalid key length")
+      }
+      if(keyLength>8){
+        if(!confirm("Your chosen key length is large. \nIt may take a long time and/or be inaccurate in calculation")){
+          return
+        }
+      }
       keyWorker.postMessage(keyLength)
       document.querySelector("button").innerText = "Generating key..."
       document.querySelector("button").disabled = true
-
     }
     keyWorker.onmessage = function(e){
      document.getElementById("00").innerText = e.data[0][0]
