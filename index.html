@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cryptography tools</title>
+  <style>
+    td {
+      width:20px;
+      height:20px;
+      border:1px solid black;
+    }
+  </style>
+  <script>
+    const alphabets = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0","1" ,"2","3","4","5","6","7","8","9"," "]
+    const keyWorker = new Worker("./worker.js")
+    function deflatten(array){
+      return [[array[0],array[1]],[array[2],array[3]]]
+    }
+    function messageToArray(message){
+      const result = [[],[]]
+      let counter = 1
+      for(const char of message){
+        const charCode = intEncode(char,true)[0]
+        if(counter%2){
+          result[0].push(charCode)
+        }else{
+          result[1].push(charCode)
+        }
+        counter+=1
+      }
+      return result
+    }
+    function multiplyMatrix(key,message){
+      const result = [[],[]]
+      for(let pairNum = 0; pairNum<message[0].length;pairNum++){
+        const pair = [message[0][pairNum],message[1][pairNum]]
+        let keyPairNum = 0
+        for(const keyPair of key){
+          const sum = keyPair[0] * pair[0] + keyPair[1] * pair[1]
+          result[keyPairNum][pairNum] = sum % 37
+          keyPairNum += 1
+        }
+      }
+      return result
+    }
+    function hillCipherEncrypt(message,key){
+      if(message.length%2){
+        throw new Error("Message must be of even length")
+      }
+      message = messageToArray(message)
+      const result = multiplyMatrix(key,message)
+      const flattenedResult = []
+      for(let counter = 0;counter<result[0].length;counter++){
+        flattenedResult.push(result[0][counter])
+        flattenedResult.push(result[1][counter])
+      }
+      const decoded = intEncode(flattenedResult,false)
+      return decoded.join("")
+    }
+    function hillCipherDecrypt(message,key){
+      if(message.length%2){
+        throw new Error("Message must be of even length")
+      }
+      message = messageToArray(message)
+      const decryptKey = inverse(key)
+      const result = multiplyMatrix(decryptKey,message)
+      const flattenedResult = []
+      for(let counter = 0;counter<result[0].length;counter++){
+        flattenedResult.push(result[0][counter])
+        flattenedResult.push(result[1][counter])
+      }
+      const decoded = intEncode(flattenedResult,false)
+      return decoded.join("")
+    }
+    const determinant = matrix => (matrix[0][0] * matrix[1][1]) - (matrix[0][1]*matrix[1][0])
+    function inverse(matrix){
+      if(determinant(matrix)!=1){
+        throw new Error("Determinant must be equal to 1")
+      }
+      [matrix[0][0],matrix[1][1]] = [matrix[1][1],matrix[0][0]]
+      matrix[0][1]= -matrix[0][1]
+      matrix[1][0]= -matrix[1][0]
+      return matrix
+    }
+    function shift(message,num){
+      message = message.toUpperCase()
+      let newString = ""
+      for(const character of message){
+        let newCharCode = character.charCodeAt()+num
+        if(newCharCode>=90){
+          newCharCode = 64 + (newCharCode-90)%26
+        }
+        if(newCharCode<65){
+          newCharCode = 65 + (newCharCode+65)%26
+        }
+        newString+=String.fromCharCode(newCharCode)
+      }
+      return newString
+    }
+    function intEncode(message,encode){
+      const result = []
+      if(encode){
+        message = message.toUpperCase()
+        for(const char of message){
+          if(alphabets.includes(char)){
+            result.push(alphabets.indexOf(char))
+          }else{
+            throw new Error("Invalid character")
+          }
+        }
+      }else{
+        for(let integer of message){
+          integer = parseInt(integer)
+          if(isNaN(integer)){
+            throw new Error("Invalid character")
+          }
+          if(integer>=37){
+            integer = integer % 37
+          }else if(integer<0){
+            integer = integer % 37 + 37
+          }
+          let thisAlphabet = alphabets[integer]
+          result.push(alphabets[integer])
+        }
+      }
+      return result
+    }
+    function startShift(){
+      ;(async()=>{
+        const isDecode = document.getElementById("shift-decode?").checked
+        const message = document.getElementById("shift-text").value
+        const output = document.getElementById("shift-output")
+        let key = parseInt(document.getElementById("shift-key").value)
+        if(isNaN(key)){
+          // if(output.value!="" && document.getElementById("shift-key").value=="" && !output.value.includes("rror")){
+          //   console.log(output.value[0].charCodeAt())
+          //   console.log(message[0].charCodeAt())
+          //   document.getElementById("shift-key").value = output.value[0].charCodeAt() - message[0].charCodeAt()
+          //   return
+          // }
+          throw new Error("Key is invalid")
+        }
+        key = Math.abs(key)
+        if(isDecode){
+          key = -key
+        }
+        output.innerText = shift(message,key)
+      })()
+      .catch(e=>{
+        console.log(e)
+        document.getElementById("shift-output").innerText = e.toString()
+      })
+    }
+    function startIntEncode(){
+      ;(async()=>{
+        let message = document.getElementById("int-text").value
+        const encode = !document.getElementById("int-decode?").checked
+        if(!encode){
+          document.getElementById("intEncodeLabel").innerText = "List of comma separated integers"
+          message = message.split(" ").join("")
+          message = message.split(",")
+        }else{
+          document.getElementById("intEncodeLabel").innerText = "Text"
+        }
+        const outputElem = document.getElementById("int-output")
+        const output = intEncode(message,encode)
+        if(!encode){
+          outputElem.innerText = output.join("")
+        }else{
+          outputElem.innerText = output.join(",")
+        }
+      })()
+      .catch(e=>{
+        console.log(e)
+        document.getElementById("int-output").innerText = e.toString()
+      })
+    }
+    function getKeyValue(id){
+      const keyValue = parseInt(document.getElementById(id).innerText)
+      console.log(id)
+      if(isNaN(keyValue)){
+        throw new Error("Key value invalid")
+      }
+      return keyValue
+    }
+    function startHillCipher(){
+      ;(async()=>{
+        const message = document.getElementById("hill-cipher-text").value
+        const encode = !document.getElementById("hill-cipher-decrypt?").checked
+        const outputElem = document.getElementById("hill-cipher-output")
+        const ids = [["00","01"],["10","11"]]
+        const key = ids
+        .map(idPair=>idPair
+        .map(getKeyValue))
+        if(determinant(key)!=1){
+          throw new Error("Determinant of key must be 1")
+        }
+        let output
+        if(encode){
+          output = hillCipherEncrypt(message,key)
+        }else{
+          output = hillCipherDecrypt(message,key)
+        }
+        outputElem.innerText = output
+      })()
+      .catch(e=>{
+        console.log(e)
+        document.getElementById("hill-cipher-output").innerText = e.toString()
+      })
+    }
+    function hillGenkey(){
+      const keyLength = parseInt(prompt("Enter key length (1<x<10): "))
+      keyWorker.postMessage(keyLength)
+      document.querySelector("button").innerText = "Generating key..."
+      document.querySelector("button").disabled = true
+
+    }
+    keyWorker.onmessage = function(e){
+     document.getElementById("00").innerText = e.data[0][0]
+     document.getElementById("01").innerText = e.data[0][1]
+     document.getElementById("10").innerText = e.data[1][0]
+     document.getElementById("11").innerText = e.data[1][1]
+     document.querySelector("button").innerText = "Generate key"
+     document.querySelector("button").disabled = false
+
+   }
+  </script>
+</head>
+<body>
+  <h2>Shift cipher</h2>
+  <input oninput="startShift()" id="shift-decode?" type="checkbox">
+  <label>Decode</label><br>
+  <label>Text</label>
+  <input oninput="startShift()" id="shift-text"><br>
+  <label>Key</label>
+  <input oninput="startShift()" id="shift-key"><br>
+  <label>Output:</label>
+  <div oninput="startShift()" id="shift-output"></div>
+  <h2>Integer encode</h2>
+  <input oninput="startIntEncode()" id="int-decode?" type="checkbox">
+  <label>Decode</label><br>
+  <label id="intEncodeLabel">Text</label>
+  <input oninput="startIntEncode()" id="int-text"><br>
+  <label>Output:</label>
+  <div id="int-output"></div>
+  <h2>Hill cipher</h2>
+  <input oninput="startHillCipher()" id="hill-cipher-decrypt?" type="checkbox">
+  <label>Decode</label><br>
+  <label>Key</label>
+  <table>
+    <tr>
+      <td oninput="startHillCipher()" contenteditable="true" id="00"></td>
+      <td oninput="startHillCipher()" contenteditable="true" id="01"></td>
+    </tr>
+    <tr>
+      <td oninput="startHillCipher()" contenteditable="true" id="10"></td>
+      <td oninput="startHillCipher()" contenteditable="true" id="11"></td>
+    </tr>
+  </table>
+  <button onclick="hillGenkey()">Generate random key</button>
+<br><br>  <label>Text</label>
+  <input oninput="startHillCipher()" id="hill-cipher-text"><br>
+  <label>Output:</label>
+  <div id="hill-cipher-output"></div>
+</body>
+</html>
