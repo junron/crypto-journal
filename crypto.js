@@ -1,4 +1,7 @@
 const alphabets = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0","1" ,"2","3","4","5","6","7","8","9"," "]    
+
+const node = (typeof module.exports != undefined)
+
 function deflatten(array){
   return [[array[0],array[1]],[array[2],array[3]]]
 }
@@ -119,4 +122,13 @@ function intEncode(message,encode){
     }
   }
   return result
+}
+
+if (node){
+  module.exports = Object.freeze({
+    intEncode,
+    shift,
+    hillCipherDecrypt,
+    hillCipherEncrypt
+  })
 }

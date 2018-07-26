@@ -1,0 +1,26 @@
+{
+  "name": "crypto-journal",
+  "version": "1.0.0",
+  "description": "Tools for math cryptography journal",
+  "main": "crypto.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/junron/crypto-journal.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/junron/crypto-journal/issues"
+  },
+  "homepage": "https://github.com/junron/crypto-journal#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0"
+  }
+}
