@@ -1,6 +1,6 @@
 const alphabets = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0","1" ,"2","3","4","5","6","7","8","9"," "]    
 
-const node = (typeof module.exports != undefined)
+const node = (typeof module != "undefined" && typeof module.exports != undefined)
 
 function deflatten(array){
   return [[array[0],array[1]],[array[2],array[3]]]
@@ -83,15 +83,18 @@ function inverse(matrix){
 function shift(message,num){
   message = message.toUpperCase()
   let newString = ""
+  const alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
   for(const character of message){
-    let newCharCode = character.charCodeAt()+num
-    if(newCharCode>=90){
-      newCharCode = 64 + (newCharCode-90)%26
+    const pos = alphabet.indexOf(character)
+    if(pos<0){
+      throw new Error("Invalid character")
     }
-    if(newCharCode<65){
-      newCharCode = 65 + (newCharCode+65)%26
+    let newCharCode = (alphabet.indexOf(character)+num)%26
+    if(newCharCode<0){
+      newCharCode = 26 + newCharCode
     }
-    newString+=String.fromCharCode(newCharCode)
+   //console.log(newCharCode)
+    newString += alphabet[newCharCode]
   }
   return newString
 }
