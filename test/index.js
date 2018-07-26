@@ -15,6 +15,13 @@ function testIntEncode(msg){
   return msg == crypto.intEncode(crypto.intEncode(msg,true),false).join("")
 }
 
+function testHillKeygen(keyLength){
+  const findDeterminant = matrix => (matrix[0][0] * matrix[1][1]) - (matrix[0][1]*matrix[1][0])
+  const key = crypto.hillKeygen(keyLength)
+  const determinant = findDeterminant(key)
+  return determinant === 1
+}
+
 describe("Crypto",function(){
   it("Should be able to use the shift cipher",function(){
     const result = check(property(
@@ -33,6 +40,18 @@ describe("Crypto",function(){
     const result = check(property(
       gen.alphaNumString,
       testIntEncode),
+      { numTests: 1000 }
+    )
+    if(!result.result){
+      console.log(result)
+    }
+    expect(result.result).to.be.true
+  })
+
+  it("Should be able to generate keys for the hill cipher",function(){
+    const result = check(property(
+      gen.intWithin(2,6),
+      testHillKeygen),
       { numTests: 1000 }
     )
     if(!result.result){

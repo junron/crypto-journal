@@ -25,5 +25,4 @@ onmessage = function(e){
     }
     console.log("Failed. No factor above 10")
   }
-  calculating = false
 }
