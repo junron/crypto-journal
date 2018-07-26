@@ -34,13 +34,17 @@ function hillCipherEncrypt(message,key){
     throw new Error("Message must be of even length")
   }
   message = messageToArray(message)
+  console.log("Int message",message)
+  console.log("Multiplying",key,"and",message)
   const result = multiplyMatrix(key,message)
+  console.log("result:",result)
   const flattenedResult = []
   for(let counter = 0;counter<result[0].length;counter++){
     flattenedResult.push(result[0][counter])
     flattenedResult.push(result[1][counter])
   }
   const decoded = intEncode(flattenedResult,false)
+  console.log("Decode back to characters",decoded)
   return decoded.join("")
 }
 function hillCipherDecrypt(message,key){
@@ -49,13 +53,18 @@ function hillCipherDecrypt(message,key){
   }
   message = messageToArray(message)
   const decryptKey = inverse(key)
+  console.log("Int message",message)
+  console.log("inverse of key",decryptKey)
+  console.log("Multiplying",decryptKey,"and",message)
   const result = multiplyMatrix(decryptKey,message)
+  console.log("result:",result)
   const flattenedResult = []
   for(let counter = 0;counter<result[0].length;counter++){
     flattenedResult.push(result[0][counter])
     flattenedResult.push(result[1][counter])
   }
   const decoded = intEncode(flattenedResult,false)
+  console.log("Decode back to characters",decoded)
   return decoded.join("")
 }
 const determinant = matrix => (matrix[0][0] * matrix[1][1]) - (matrix[0][1]*matrix[1][0])
