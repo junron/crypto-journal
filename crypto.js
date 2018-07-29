@@ -49,7 +49,7 @@ function hillCipherEncrypt(message,key,suppressLogs){
     flattenedResult.push(result[1][counter])
   }
   const decoded = intEncode(flattenedResult,false)
-  log("Decode back to characters",decoded)
+  log("Decode back to characters",decoded.join(""))
 
   return decoded.join("")
 }
@@ -74,7 +74,7 @@ function hillCipherDecrypt(message,key,suppressLogs){
     flattenedResult.push(result[1][counter])
   }
   const decoded = intEncode(flattenedResult,false)
-  log("Decode back to characters",decoded)
+  log("Decode back to characters",decoded.join(""))
   return decoded.join("")
 }
 const determinant = matrix => (matrix[0][0] * matrix[1][1]) - (matrix[0][1]*matrix[1][0])

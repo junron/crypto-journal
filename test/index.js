@@ -203,7 +203,7 @@ describe("Crypto",function(){
     expect(result.result).to.be.true
   })
 
-  it("Should be able to detect and reject errors",function(){
+  it("Should be able to detect and reject errors in hill cipher input",function(){
     this.timeout(5000)
     const key = crypto.hillKeygen(5)
     const result = check(property(
@@ -221,5 +221,13 @@ describe("Crypto",function(){
       return crypto.hillCipherDecrypt("hi",key,true)
     }
     expect(badFn).to.throw()
+  })
+  it("Should be able to log steps in hill cipher encryption and decryption",function(){
+    this.timeout(5000)
+    const key = crypto.hillKeygen(5)
+    const message = "The hill cipher implementation works"
+    const encrypted = crypto.hillCipherEncrypt(message,key)
+    const decrypted = crypto.hillCipherDecrypt(encrypted,key)
+    expect(decrypted).to.equal(message.toUpperCase())
   })
 })
