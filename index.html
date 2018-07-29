@@ -21,12 +21,6 @@
         const output = document.getElementById("shift-output")
         let key = parseInt(document.getElementById("shift-key").value)
         if(isNaN(key)){
-          // if(output.value!="" && document.getElementById("shift-key").value=="" && !output.value.includes("rror")){
-          //   console.log(output.value[0].charCodeAt())
-          //   console.log(message[0].charCodeAt())
-          //   document.getElementById("shift-key").value = output.value[0].charCodeAt() - message[0].charCodeAt()
-          //   return
-          // }
           throw new Error("Key is invalid")
         }
         key = Math.abs(key)

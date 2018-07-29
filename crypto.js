@@ -2,9 +2,6 @@ const alphabets = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "
 
 const node = (typeof module != "undefined" && typeof module.exports != undefined)
 
-function deflatten(array){
-  return [[array[0],array[1]],[array[2],array[3]]]
-}
 function messageToArray(message){
   const result = [[],[]]
   let counter = 1
@@ -32,42 +29,52 @@ function multiplyMatrix(key,message){
   }
   return result
 }
-function hillCipherEncrypt(message,key){
+function hillCipherEncrypt(message,key,debug=true){
+  let log = console.log
+  if(!debug){
+    log = ()=>null;
+  }
   if(message.length%2){
     throw new Error("Message must be of even length")
   }
   message = messageToArray(message)
-  console.log("Int message",message)
-  console.log("Multiplying",key,"and",message)
+  log("Int message",message)
+  log("Multiplying",key,"and",message)
+
   const result = multiplyMatrix(key,message)
-  console.log("result:",result)
+  log("result:",result)
   const flattenedResult = []
   for(let counter = 0;counter<result[0].length;counter++){
     flattenedResult.push(result[0][counter])
     flattenedResult.push(result[1][counter])
   }
   const decoded = intEncode(flattenedResult,false)
-  console.log("Decode back to characters",decoded)
+  log("Decode back to characters",decoded)
+
   return decoded.join("")
 }
-function hillCipherDecrypt(message,key){
+function hillCipherDecrypt(message,key,debug=true){
+  let log = console.log
+  if(!debug){
+    log = ()=>null;
+  }
   if(message.length%2){
     throw new Error("Message must be of even length")
   }
   message = messageToArray(message)
   const decryptKey = inverse(key)
-  console.log("Int message",message)
-  console.log("inverse of key",decryptKey)
-  console.log("Multiplying",decryptKey,"and",message)
+  log("Int message",message)
+  log("inverse of key",decryptKey)
+  log("Multiplying",decryptKey,"and",message)
   const result = multiplyMatrix(decryptKey,message)
-  console.log("result:",result)
+  log("result:",result)
   const flattenedResult = []
   for(let counter = 0;counter<result[0].length;counter++){
     flattenedResult.push(result[0][counter])
     flattenedResult.push(result[1][counter])
   }
   const decoded = intEncode(flattenedResult,false)
-  console.log("Decode back to characters",decoded)
+  log("Decode back to characters",decoded)
   return decoded.join("")
 }
 const determinant = matrix => (matrix[0][0] * matrix[1][1]) - (matrix[0][1]*matrix[1][0])
@@ -160,6 +167,7 @@ if (node){
     shift,
     hillCipherDecrypt,
     hillCipherEncrypt,
-    hillKeygen
+    hillKeygen,
+    determinant
   })
 }

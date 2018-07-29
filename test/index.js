@@ -16,10 +16,26 @@ function testIntEncode(msg){
 }
 
 function testHillKeygen(keyLength){
-  const findDeterminant = matrix => (matrix[0][0] * matrix[1][1]) - (matrix[0][1]*matrix[1][0])
   const key = crypto.hillKeygen(keyLength)
-  const determinant = findDeterminant(key)
+  const determinant = crypto.determinant(key)
   return determinant === 1
+}
+function testHillCipher(text,keyLength){
+  text = text.toUpperCase()
+  if(text.length%2){
+    text+="A"
+  }
+  const key = crypto.hillKeygen(keyLength)
+  const determinant = crypto.determinant(key)
+  if(determinant!==1){
+    throw new Error("determinant is not 1")
+  }
+  const encrypted = crypto.hillCipherEncrypt(text,key,false)
+  const decrypted = crypto.hillCipherDecrypt(encrypted,key,false)
+  if(decrypted!=text){
+    console.log(key,encrypted,decrypted,text)
+  }
+  return text == decrypted
 }
 
 describe("Crypto",function(){
@@ -49,9 +65,24 @@ describe("Crypto",function(){
   })
 
   it("Should be able to generate keys for the hill cipher",function(){
+    this.timeout(3000)
     const result = check(property(
       gen.intWithin(2,6),
       testHillKeygen),
+      { numTests: 1000 }
+    )
+    if(!result.result){
+      console.log(result)
+    }
+    expect(result.result).to.be.true
+  })
+
+  it("Should be able to encrypt and decrypt using hill cipher",function(){
+    this.timeout(5000)
+    const result = check(property(
+      gen.alphaNumString,
+      gen.intWithin(2,6),
+      testHillCipher),
       { numTests: 1000 }
     )
     if(!result.result){
