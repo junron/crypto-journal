@@ -94,11 +94,11 @@ function testHillCipherUnevenText(key){
       text+="A"
     }
     try{
-      const encrypted = crypto.hillCipherEncrypt(text,key,false)
+      const encrypted = crypto.hillCipherEncrypt(text,key,true)
       return false
     }catch(e){
       try{
-        const decrypted = crypto.hillCipherDecrypt(text,key,false)
+        const decrypted = crypto.hillCipherDecrypt(text,key,true)
         return false
       }catch(e){
         return true
@@ -116,8 +116,8 @@ function testHillCipher(text,keyLength){
   if(determinant!==1){
     throw new Error("determinant is not 1")
   }
-  const encrypted = crypto.hillCipherEncrypt(text,key,false)
-  const decrypted = crypto.hillCipherDecrypt(encrypted,key,false)
+  const encrypted = crypto.hillCipherEncrypt(text,key,true)
+  const decrypted = crypto.hillCipherDecrypt(encrypted,key,true)
   if(decrypted!=text){
     console.log(key,encrypted,decrypted,text)
   }
@@ -218,7 +218,7 @@ describe("Crypto",function(){
     const badFn = ()=>{
       const key = crypto.hillKeygen(5)
       key[0][0] = key[0][0]+100
-      return crypto.hillCipherDecrypt("hi",key,false)
+      return crypto.hillCipherDecrypt("hi",key,true)
     }
     expect(badFn).to.throw()
   })

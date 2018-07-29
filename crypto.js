@@ -29,9 +29,9 @@ function multiplyMatrix(key,message){
   }
   return result
 }
-function hillCipherEncrypt(message,key,debug=true){
+function hillCipherEncrypt(message,key,suppressLogs){
   let log = console.log
-  if(!debug){
+  if(suppressLogs){
     log = ()=>null;
   }
   if(message.length%2){
@@ -53,9 +53,9 @@ function hillCipherEncrypt(message,key,debug=true){
 
   return decoded.join("")
 }
-function hillCipherDecrypt(message,key,debug=true){
+function hillCipherDecrypt(message,key,suppressLogs){
   let log = console.log
-  if(!debug){
+  if(suppressLogs){
     log = ()=>null;
   }
   if(message.length%2){
