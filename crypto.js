@@ -1,3 +1,14 @@
+if(typeof BigInt==="undefined"){
+  console.log("BigInt not supported")
+  BigInt = string=>{
+    const n = Number(string)
+    if(Number.isNaN(n)){
+      throw new Error("Invalid number")
+    }
+    return n
+  }
+}
+
 const alphabets = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0","1" ,"2","3","4","5","6","7","8","9"," "]    
 
 const node = (typeof module != "undefined" && typeof module.exports != undefined)
@@ -23,7 +34,7 @@ function multiplyMatrix(key,message){
     let keyPairNum = 0
     for(const keyPair of key){
       const sum = keyPair[0] * pair[0] + keyPair[1] * pair[1]
-      result[keyPairNum][pairNum] = sum % 37
+      result[keyPairNum][pairNum] = sum % BigInt(37)
       keyPairNum += 1
     }
   }
@@ -96,9 +107,9 @@ function shift(message,num){
     if(pos<0){
       throw new Error("Invalid character")
     }
-    let newCharCode = (alphabet.indexOf(character)+num)%26
+    let newCharCode = (BigInt(alphabet.indexOf(character))+num)%BigInt(26)
     if(newCharCode<0){
-      newCharCode = 26 + newCharCode
+      newCharCode = BigInt(26) + newCharCode
     }
    //console.log(newCharCode)
     newString += alphabet[newCharCode]
@@ -111,21 +122,18 @@ function intEncode(message,encode){
     message = message.toUpperCase()
     for(const char of message){
       if(alphabets.includes(char)){
-        result.push(alphabets.indexOf(char))
+        result.push(BigInt(alphabets.indexOf(char)))
       }else{
         throw new Error("Invalid character")
       }
     }
   }else{
     for(let integer of message){
-      integer = parseInt(integer)
-      if(isNaN(integer)){
-        throw new Error("Invalid character")
-      }
+      integer = BigInt(integer)
       if(integer>=37){
-        integer = integer % 37
+        integer = integer % BigInt(37)
       }else if(integer<0){
-        integer = integer % 37 + 37
+        integer = integer % BigInt(37) + BigInt(37)
       }
       let thisAlphabet = alphabets[integer]
       result.push(alphabets[integer])

@@ -13,17 +13,26 @@
   </style>
   <script src="./crypto.js"></script>
   <script>
+    if(typeof BigInt==="undefined"){
+      console.log("BigInt not supported")
+      BigInt = string=>{
+        const n = Number(string)
+        if(Number.isNaN(n)){
+          throw new Error("Invalid number")
+        }
+        return n
+      }
+    }
     const keyWorker = new Worker("./worker.js")
     function startShift(){
       ;(async()=>{
         const isDecode = document.getElementById("shift-decode?").checked
         const message = document.getElementById("shift-text").value
         const output = document.getElementById("shift-output")
-        let key = parseInt(document.getElementById("shift-key").value)
-        if(isNaN(key)){
-          throw new Error("Key is invalid")
+        let key = BigInt(document.getElementById("shift-key").value)
+        if(key<BigInt(0)){
+          key = -key
         }
-        key = Math.abs(key)
         if(isDecode){
           key = -key
         }
@@ -59,12 +68,7 @@
       })
     }
     function getKeyValue(id){
-      const keyValue = parseInt(document.getElementById(id).innerText)
-      console.log(id)
-      if(isNaN(keyValue)){
-        throw new Error("Key value invalid")
-      }
-      return keyValue
+      return BigInt(document.getElementById(id).innerText)
     }
     function startHillCipher(){
       ;(async()=>{
