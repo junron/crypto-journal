@@ -24,6 +24,8 @@ onmessage = function(e){
   const numDigits = e.data
   const lower = parseInt("1"+"0".repeat(numDigits-1))
   const upper = parseInt("9".repeat(numDigits))
+  const minFactor = BigInt(Math.max("1"+"0".repeat(Math.max(numDigits-2,0))),2)
+  console.log(minFactor)
   while(true){
     const a = BigInt(Math.floor(Math.random() * upper) + lower)
     const b = BigInt(Math.floor(Math.random() * upper) + lower)
@@ -37,8 +39,8 @@ onmessage = function(e){
     if(!(sqrt%BigInt(2))){
       sqrt--
     }
-    while(sqrt>=BigInt(10)){
-      console.log(sqrt)
+    console.log((sqrt-minFactor)/BigInt(2))
+    while(sqrt>=minFactor){
       if(random2%sqrt==BigInt(0)){
         factor1 = sqrt
         factor2 = random2/sqrt
@@ -49,6 +51,6 @@ onmessage = function(e){
     if(factor1){
       return postMessage([[a,factor1],[factor2,b]])
     }
-    console.log("Failed. No factor above 10")
+    console.log("Failed. No factor above "+minFactor)
   }
 }

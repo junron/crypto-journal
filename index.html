@@ -98,7 +98,7 @@
     }
     function hillGenkey(){
       const keyLength = parseInt(prompt("Enter key length (1<x<9): "))
-      if(isNaN(keyLength) || keyLength<2){
+      if(isNaN(keyLength) || keyLength<1){
         return alert("Invalid key length")
       }
       if(keyLength>8){
