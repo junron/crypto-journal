@@ -24,7 +24,7 @@ onmessage = function(e){
   const numDigits = e.data
   const lower = parseInt("1"+"0".repeat(numDigits-1))
   const upper = parseInt("9".repeat(numDigits))
-  const minFactor = BigInt(Math.max("1"+"0".repeat(Math.max(numDigits-2,0))),2)
+  const minFactor = BigInt(Math.min("1"+"0".repeat(Math.max(numDigits-3,0))),10)
   console.log(minFactor)
   while(true){
     const a = BigInt(Math.floor(Math.random() * upper) + lower)
