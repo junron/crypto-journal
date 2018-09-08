@@ -5,12 +5,25 @@ const { check, gen, property} = require('testcheck')
 
 const crypto = require("../crypto")
 
+if(typeof BigInt==="undefined"){
+  console.log("BigInt not supported")
+  BigInt = string=>{
+    const n = Number(string)
+    if(Number.isNaN(n)){
+      throw new Error("Invalid number")
+    }
+    return n
+  }
+}
+
 function testShift(msg,key){
   msg = msg.toUpperCase()
+  key = BigInt(key)
   return msg == crypto.shift(crypto.shift(msg,key),-key)
 }
 
 function testShiftInvalidChar(alphaNum,string,key){
+  key = BigInt(key)
   let text = alphaNum+string
   if(text.length==0||/^[a-zA-Z]+$/.test(text)){
     //This test case is invalid, skip
@@ -43,7 +56,7 @@ function testIntEncode(msg){
   const encoded = crypto.intEncode(msg,true)
 
   for(let i = 0 ;i<encoded.length;i++){
-    encoded[i] += 37 * multiplier
+    encoded[i] += BigInt(37 * multiplier)
   }
   return msg == crypto.intEncode(encoded,false).join("")
 }
@@ -85,7 +98,11 @@ function testIntEncodeInvalidChar(alphaNum,string){
 function testHillKeygen(keyLength){
   const key = crypto.hillKeygen(keyLength)
   const determinant = crypto.determinant(key)
-  return determinant === 1
+  // if(determinant!==1){
+  //   console.log(key)
+  //   process.exit(1)
+  // }
+  return determinant === BigInt(1)
 }
 function testHillCipherUnevenText(key){
   return text=>{
@@ -113,7 +130,7 @@ function testHillCipher(text,keyLength){
   }
   const key = crypto.hillKeygen(keyLength)
   const determinant = crypto.determinant(key)
-  if(determinant!==1){
+  if(determinant!==BigInt(1)){
     throw new Error("determinant is not 1")
   }
   const encrypted = crypto.hillCipherEncrypt(text,key,true)
@@ -125,6 +142,7 @@ function testHillCipher(text,keyLength){
 }
 
 describe("Crypto",function(){
+  this.timeout(3500)
   it("Should be able to use the shift cipher",function(){
     const result = check(property(
       gen.substring("ABCDEFGHIJKLMNOPQRSTUVWXYZ".repeat(100)),
@@ -177,9 +195,9 @@ describe("Crypto",function(){
   })
 
   it("Should be able to generate keys for the hill cipher",function(){
-    this.timeout(3000)
+    this.timeout(4000)
     const result = check(property(
-      gen.intWithin(2,6),
+      gen.intWithin(1,5),
       testHillKeygen),
       { numTests: 1000 }
     )
@@ -193,7 +211,7 @@ describe("Crypto",function(){
     this.timeout(5000)
     const result = check(property(
       gen.alphaNumString,
-      gen.intWithin(2,6),
+      gen.intWithin(1,5),
       testHillCipher),
       { numTests: 500 }
     )
