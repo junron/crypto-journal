@@ -8,9 +8,9 @@ if(typeof BigInt==="undefined"){
     return n
   }
 }
-const {hillKeygen,determinant} = require("./crypto")
+const {hillKeygen,determinant} = require("./crypto")(false)
 const iter = 100
-const keyLength = 6
+const keyLength = 5
 
 console.time(`Hill keygen: ${iter} keys, length ${keyLength}`)
 for(let i=0;i<iter;i++){

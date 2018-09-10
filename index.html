@@ -13,16 +13,7 @@
   </style>
   <script src="./crypto.js"></script>
   <script>
-    if(typeof BigInt==="undefined"){
-      console.log("BigInt not supported")
-      BigInt = string=>{
-        const n = Number(string)
-        if(Number.isNaN(n)){
-          throw new Error("Invalid number")
-        }
-        return n
-      }
-    }
+    const crypto = cryptoFn()
     const keyWorker = new Worker("./worker.js")
     function startShift(){
       ;(async()=>{
@@ -36,7 +27,7 @@
         if(isDecode){
           key = -key
         }
-        output.innerText = shift(message,key)
+        output.innerText = crypto.shift(message,key)
       })()
       .catch(e=>{
         console.log(e)
@@ -55,7 +46,7 @@
           document.getElementById("intEncodeLabel").innerText = "Text"
         }
         const outputElem = document.getElementById("int-output")
-        const output = intEncode(message,encode)
+        const output = crypto.intEncode(message,encode)
         if(!encode){
           outputElem.innerText = output.join("")
         }else{
@@ -79,15 +70,15 @@
         const key = ids
         .map(idPair=>idPair
         .map(getKeyValue))
-        console.log(determinant(key))
-        if(determinant(key)!=1){
+        console.log(crypto.determinant(key))
+        if(crypto.determinant(key)!=1){
           throw new Error("Determinant of key must be 1")
         }
         let output
         if(encode){
-          output = hillCipherEncrypt(message,key)
+          output = crypto.hillCipherEncrypt(message,key)
         }else{
-          output = hillCipherDecrypt(message,key)
+          output = crypto.hillCipherDecrypt(message,key)
         }
         outputElem.innerText = output
       })()

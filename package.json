@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "nyc --reporter=html --reporter=lcov mocha test",
+    "test": "nyc --reporter=html --reporter=lcov find ./test -name '*.js' -exec ./node_modules/.bin/mocha \\{} \\;",
     "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls"
   },
   "repository": {
@@ -24,7 +24,7 @@
     "chai": "^4.1.2",
     "coveralls": "^3.0.2",
     "mocha": "^5.2.0",
-    "nyc": "^12.0.2",
+    "nyc": "^13.0.1",
     "testcheck": "^1.0.0-rc.2"
   }
 }

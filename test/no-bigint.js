@@ -3,7 +3,7 @@ const expect = chai.expect
 const mocha = require("mocha")
 const { check, gen, property} = require('testcheck')
 
-const crypto = require("../crypto")(false)
+const crypto = require("../crypto")(true)
 
 function testShift(msg,key){
   msg = msg.toUpperCase()
@@ -130,10 +130,10 @@ function testHillCipher(text,keyLength){
   return text == decrypted
 }
 
-describe("Crypto",function(){
+describe("Crypto without BigInt",function(){
   this.timeout(3500)
-  it("Should have BigInt enabled",()=>{
-    expect(BigInt.toString()).to.not.include("string")
+  it("Should have BigInt disabled",()=>{
+    expect(BigInt.toString()).to.include("string")
   })
   it("Should be able to use the shift cipher",function(){
     const result = check(property(
@@ -189,7 +189,7 @@ describe("Crypto",function(){
   it("Should be able to generate keys for the hill cipher",function(){
     this.timeout(4000)
     const result = check(property(
-      gen.intWithin(1,5),
+      gen.intWithin(1,4),
       testHillKeygen),
       { numTests: 1000 }
     )
@@ -203,7 +203,7 @@ describe("Crypto",function(){
     this.timeout(5000)
     const result = check(property(
       gen.alphaNumString,
-      gen.intWithin(1,5),
+      gen.intWithin(1,4),
       testHillCipher),
       { numTests: 500 }
     )
